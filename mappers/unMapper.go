@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"log"
-	"sanctionist/utils"
+	"meerkat/utils"
 	"time"
 )
 
