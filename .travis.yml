@@ -5,13 +5,10 @@ language: go
 go:
   - 1.10.x
 
-git:
-  depth: 1
-
 install: true
 
 notifications:
   email: false
 
 script:
-  - go test -v -race ./...  
+  - go test
