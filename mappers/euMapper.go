@@ -4,8 +4,9 @@ import (
 	"encoding/xml"
 	"fmt"
 	"log"
-	"meerkat/utils"
 	"time"
+
+	"github.com/HedvigInsurance/meerkat/utils"
 )
 
 type SanctionEntites struct {

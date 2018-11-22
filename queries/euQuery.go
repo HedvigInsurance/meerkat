@@ -2,10 +2,11 @@ package queries
 
 import (
 	"log"
-	"meerkat/constants"
-	"meerkat/mappers"
 	"strings"
 	"time"
+
+	"github.com/HedvigInsurance/meerkat/constants"
+	"github.com/HedvigInsurance/meerkat/mappers"
 )
 
 func QueryEUsanctionList(query []string, euList mappers.SanctionEntites) (result constants.SanctionResult) {

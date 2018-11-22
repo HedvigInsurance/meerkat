@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"meerkat/mappers"
-	"meerkat/queries"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/HedvigInsurance/meerkat/mappers"
+	"github.com/HedvigInsurance/meerkat/queries"
 
 	"github.com/gorilla/mux"
 )

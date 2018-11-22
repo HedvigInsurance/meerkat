@@ -1,9 +1,9 @@
 package main_test
 
 import (
-	"meerkat/constants"
-	"meerkat/mappers"
-	"meerkat/queries"
+	"github.com/HedvigInsurance/meerkat/constants"
+	"github.com/HedvigInsurance/meerkat/mappers"
+	"github.com/HedvigInsurance/meerkat/queries"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
