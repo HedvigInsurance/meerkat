@@ -9,7 +9,7 @@ notifications:
   email: false
 
 before_script:
-  - go get -t -v ./..
+  - go get -t -v
 
 script:
   - go test
