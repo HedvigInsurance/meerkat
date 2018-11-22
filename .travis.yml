@@ -14,5 +14,5 @@ before_script:
 script:
   - go test
 
-after_script:
+after_success:
   - docker_push.sh
