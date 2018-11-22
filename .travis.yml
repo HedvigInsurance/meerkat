@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 
 language: go
 
@@ -14,5 +14,7 @@ before_script:
 script:
   - go test
 
+services:
+  - docker
 after_success:
-  - docker_push.sh
+  - bin/docker_push.sh
