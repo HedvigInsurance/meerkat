@@ -9,6 +9,7 @@ notifications:
   email: false
 
 before_script:
+  - go get github.com/HedvigInsurance/meerkat
   - go get -t -v ./..
 
 script:
