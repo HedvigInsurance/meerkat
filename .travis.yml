@@ -12,6 +12,7 @@ notifications:
 
 before_script:
   - go get -t -v
+  - chmod +x bin/docker_push.sh
 
 script:
   - go test
