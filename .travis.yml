@@ -1,3 +1,8 @@
+sudo: required
+
+services:
+  - docker
+
 language: go
 
 go:
@@ -12,8 +17,5 @@ before_script:
 script:
   - go test
 
-sudo: required
-services:
-  - docker
 after_success:
   - bin/docker_push.sh
