@@ -4,6 +4,7 @@ if [ -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   # Push only if we're testing the master branch
   if [ "$TRAVIS_BRANCH" == "master" ]; then
 
+    echo "ITS WORKING"
     # This is needed to login on AWS and push the image on ECR
     # Change it accordingly to your docker repo
     pip install --user awscli
