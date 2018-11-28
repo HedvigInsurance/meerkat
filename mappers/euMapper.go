@@ -3,8 +3,6 @@ package mappers
 import (
 	"encoding/xml"
 	"fmt"
-	"log"
-	"time"
 
 	"github.com/HedvigInsurance/meerkat/utils"
 )
@@ -25,13 +23,11 @@ type NameAlias struct {
 }
 
 func MapEuSanctionList() (euSanctionList SanctionEntites) {
-	startEU := time.Now()
 	if xmlStr, err := utils.FetchXmlFromUrl("https://webgate.ec.europa.eu/europeaid/fsd/fsf/public/files/xmlFullSanctionsList/content?token=dG9rZW4tMjAxNw"); err != nil {
 		fmt.Printf("Failed to get XML: %v", err)
 	} else {
 		// fmt.Println("Received XML")
 		xml.Unmarshal(xmlStr, &euSanctionList)
 	}
-	log.Println("EU -- Downloading took ", time.Since(startEU))
 	return euSanctionList
 }

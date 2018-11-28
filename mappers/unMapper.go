@@ -3,8 +3,6 @@ package mappers
 import (
 	"encoding/xml"
 	"fmt"
-	"log"
-	"time"
 
 	"github.com/HedvigInsurance/meerkat/utils"
 )
@@ -30,12 +28,10 @@ type IndividualAlias struct {
 }
 
 func MapUnSanctionList() (unSanctionList IndividualRoot) {
-	startUN := time.Now()
 	if xmlStr, err := utils.FetchXmlFromUrl("https://scsanctions.un.org/resources/xml/en/consolidated.xml"); err != nil {
 		fmt.Printf("Failed to get XML: %v", err)
 	} else {
 		xml.Unmarshal(xmlStr, &unSanctionList)
 	}
-	log.Println("UN -- Downloading  took ", time.Since(startUN))
 	return unSanctionList
 }
