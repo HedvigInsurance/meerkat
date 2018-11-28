@@ -1,52 +1,50 @@
 package queries
 
 import (
-	"log"
 	"strings"
-	"time"
 
 	"github.com/HedvigInsurance/meerkat/constants"
 	"github.com/HedvigInsurance/meerkat/mappers"
 )
 
 func QueryEUsanctionList(query []string, euList mappers.SanctionEntites) (result constants.SanctionResult) {
-
-	start_eu_sanct := time.Now()
-
-	var hitted bool = false
+	var partialHiited bool = false
 	for i := 0; i < len(euList.Entites); i++ {
 		for index := 0; index < len(euList.Entites[i].NameAlias); index++ {
-			var hit uint = 0
+			var hit constants.PartialHitEuStatus = constants.PartialHitEuNone
 			for j := 0; j < len(query); j++ {
-				if strings.ToLower(query[j]) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].FirstName)) {
-					hit++
+				if strings.ToLower(strings.TrimSpace(strings.Join(query, " "))) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].WholeName)) {
+					return constants.FullHit
+				} else {
+					if strings.ToLower(query[j]) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].FirstName)) {
+						hit = constants.PartialHitEuFirstName
+					}
+					if strings.ToLower(query[j]) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].LastName)) {
+						if hit == constants.PartialHitEuFirstName {
+							hit = constants.PartialHitEuWholeNameNoMiddleName
+						} else {
+							hit = constants.PartialHitEuLastName
+						}
+					}
+					if strings.ToLower(query[j]) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].MiddleName)) {
+						if hit == constants.PartialHitEuWholeNameNoMiddleName {
+							hit = constants.PartialHitEuWholeName
+						} else {
+							hit = constants.PartialHitEuMiddleName
+						}
+					}
 				}
-				if strings.ToLower(query[j]) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].LastName)) {
-					hit++
-				}
-				if strings.ToLower(query[j]) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].MiddleName)) {
-					hit++
-				}
-				// if strings.ToLower(strings.TrimSpace(strings.Join(query))) == strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].WholeName)) {
-				// 	log.Println("\nComparison Whole : ", strings.ToLower(query[j]), strings.ToLower(strings.TrimSpace(euList.Entites[i].NameAlias[index].WholeName)))
-				// 	hit++
-				// }
 			}
-			if hit > 1 {
-				log.Println("Sanctionlist took ", time.Since(start_eu_sanct))
+			if hit == constants.PartialHitEuWholeName || hit == constants.PartialHitEuWholeNameNoMiddleName {
 				return constants.FullHit
-			} else if hit == 1 {
-				hitted = true
+			} else if hit > 0 { //PartialHitEuStatus is not EuNone
+				partialHiited = true
 			}
 		}
 	}
-	if hitted {
+	if partialHiited {
 		return constants.PartialHit
-		// w.WriteHeader(200)
-		// w.Write([]byte("PARTIAL hit"))
 	} else {
-		// 	w.WriteHeader(201)
-		// 	w.Write([]byte("NO HIT"))
 		return constants.NoHit
 	}
 }
