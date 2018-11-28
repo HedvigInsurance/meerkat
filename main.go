@@ -20,8 +20,8 @@ var euList mappers.SanctionEntites
 var unList mappers.IndividualRoot
 
 type Response struct {
-	Query  string
-	Result string
+	Query  string `json:"query"`
+	Result string `json:"result"`
 }
 
 func main() {
