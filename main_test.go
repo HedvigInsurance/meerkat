@@ -12,34 +12,52 @@ import (
 var _ = Describe("Main", func() {
 
 	var euList mappers.SanctionEntites
+	var unList mappers.IndividualRoot
 
 	BeforeSuite(func() {
 		euList = mappers.MapEuSanctionList()
+		unList = mappers.MapUnSanctionList()
 	})
 
 	Describe("Testing Querying function", func() {
 		Context("query a non-terrosit", func() {
 			It("should be a No-HIT", func() {
 
-				query := []string{"Meletis", "Mazarakiotis"}
+				var queryNoTerrorist []string = []string{"Meletis", "Mazarakiotis"}
 
-				Expect(queries.QueryEUsanctionList(query, euList)).To(Equal(constants.NoHit))
+				Expect(queries.QueryEUsanctionList(queryNoTerrorist, euList)).To(Equal(constants.NoHit))
 			})
 		})
 		Context("query a terrosit", func() {
-			It("should be a Parcial-HIT", func() {
+			It("should be a Full-HIT with wholeNameNoMiddleName", func() {
 
-				query := []string{"Ricardo", "Ayeras"}
+				var queryTerroristNoWholeName []string = []string{"Ricardo", "Ayeras"}
 
-				Expect(queries.QueryEUsanctionList(query, euList)).To(Equal(constants.FullHit))
+				Expect(queries.QueryEUsanctionList(queryTerroristNoWholeName, euList)).To(Equal(constants.FullHit))
 			})
 		})
-		Context("query a terrosit", func() {
-			It("should be a Full-HIT", func() {
+		Context("query a non - terrosit with suspicious first name", func() {
+			It("should be a Partial-HIT", func() {
 
-				query := []string{"Ricardo", "Mazarakiotis"}
+				var queryPartialHit []string = []string{"Ricardo", "Mazarakiotis"}
 
-				Expect(queries.QueryEUsanctionList(query, euList)).To(Equal(constants.PartialHit))
+				Expect(queries.QueryEUsanctionList(queryPartialHit, euList)).To(Equal(constants.PartialHit))
+			})
+		})
+		Context("query a confirmed terrosit", func() {
+			It("should be a Full-HIT with wholename match", func() {
+
+				var queryWholeName []string = []string{"Robert", "Gabriel", "Mugabe"}
+
+				Expect(queries.QueryEUsanctionList(queryWholeName, euList)).To(Equal(constants.FullHit))
+			})
+		})
+		Context("query a confirmed terrosit from un", func() {
+			It("should be a Full-HIT from UN", func() {
+
+				var queryWholeName []string = []string{"Abdul Aziz", "Abbasin"}
+
+				Expect(queries.QueryUNsanctionList(queryWholeName, unList)).To(Equal(constants.FullHit))
 			})
 		})
 	})
