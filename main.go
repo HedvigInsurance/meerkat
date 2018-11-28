@@ -54,7 +54,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/check", checkStatus).Methods(http.MethodGet).Queries("query", "{query}")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":80", router))
 }
 
 func checkStatus(w http.ResponseWriter, r *http.Request) {
