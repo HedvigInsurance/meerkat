@@ -64,20 +64,20 @@ func checkStatus(w http.ResponseWriter, r *http.Request) {
 	query := strings.Split(vars["query"], " ")
 
 	mu.Lock()
-	euResult := queries.QueryEUsanctionList(query, euList)
+	unResult := queries.QueryUNsanctionList(query, unList)
 	mu.Unlock()
 
-	if euResult == constants.FullHit {
+	if unResult == constants.FullHit {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Response{vars["query"], euResult.ToString()})
-		log.Println("EU Sanctioninst search for", query, "took", time.Since(start_sanct), "Result:", euResult.ToString())
+		json.NewEncoder(w).Encode(Response{vars["query"], unResult.ToString()})
+		log.Println("EU Sanctioninst search for", query, "took", time.Since(start_sanct), "Result:", unResult.ToString())
 	} else {
 		mu.Lock()
-		unResult := queries.QueryUNsanctionList(query, unList)
+		euResult := queries.QueryEUsanctionList(query, euList)
 		mu.Unlock()
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Response{vars["query"], unResult.ToString()})
-		log.Println("UN Sanctionlist search for", query, "took", time.Since(start_sanct), "Result:", unResult.ToString())
+		json.NewEncoder(w).Encode(Response{vars["query"], euResult.ToString()})
+		log.Println("UN Sanctionlist search for", query, "took", time.Since(start_sanct), "Result:", euResult.ToString())
 	}
 }
