@@ -61,7 +61,7 @@ func checkStatus(w http.ResponseWriter, r *http.Request) {
 	start_sanct := time.Now()
 
 	vars := mux.Vars(r)
-	query := strings.Split(vars["query"], " ")
+	query := strings.Fields(vars["query"])
 
 	mu.Lock()
 	unResult := queries.QueryUNsanctionList(query, unList)
