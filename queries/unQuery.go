@@ -8,7 +8,7 @@ import (
 	"github.com/HedvigInsurance/meerkat/utils"
 )
 
-func QueryUNsanctionList(query []string, unList mappers.IndividualRoot) (result constants.SanctionResult) {
+func QueryUnSanctionList(query []string, unList mappers.IndividualRoot) (result constants.SanctionResult) {
 	for i := 0; i < len(unList.IndividualRoot.IndividualChilds); i++ {
 		var individual mappers.Individual = unList.IndividualRoot.IndividualChilds[i]
 		name := individual.FirstName + individual.SecondName + individual.ThirdName + individual.FourthName

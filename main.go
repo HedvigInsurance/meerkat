@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/HedvigInsurance/meerkat/constants"
@@ -15,69 +14,80 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var mu sync.RWMutex
-var euList mappers.SanctionEntites
+var euList mappers.SanctionEntities
 var unList mappers.IndividualRoot
 
-type Response struct {
+type response struct {
 	Query  string `json:"query"`
 	Result string `json:"result"`
 }
 
-func main() {
-	start_fetch := time.Now()
+func init() {
+	log.Println("Meerkat started!")
+	initialFetch := time.Now()
 	euList = mappers.MapEuSanctionList()
 	unList = mappers.MapUnSanctionList()
+	log.Println("Both listed were initiated! It took: ", time.Since(initialFetch))
+}
 
-	log.Println("Initial fetching took ", time.Since(start_fetch))
-
-	go func() {
-		for {
-			time.Sleep(240)
-
-			euTemp := mappers.MapEuSanctionList()
-			mu.Lock()
-			euList = euTemp
-			mu.Unlock()
-		}
-	}()
-
-	go func() {
-		for {
-			time.Sleep(240)
-			unTemp := mappers.MapUnSanctionList()
-			mu.Lock()
-			unList = unTemp
-			mu.Unlock()
-		}
-	}()
-
+func main() {
+	euListChannel := make(chan mappers.SanctionEntities)
+	unListChannel := make(chan mappers.IndividualRoot)
 	router := mux.NewRouter()
-	router.HandleFunc("/api/check", checkStatus).Methods(http.MethodGet).Queries("query", "{query}")
-	log.Fatal(http.ListenAndServe(":80", router))
+
+	go func() {
+		for {
+			time.Sleep(time.Hour)
+			euListChannel <- mappers.MapEuSanctionList()
+			log.Println("EU list was fetched")
+		}
+	}()
+
+	go func() {
+		for {
+			time.Sleep(time.Hour)
+			unListChannel <- mappers.MapUnSanctionList()
+			log.Println("UN list was fetched")
+		}
+	}()
+
+	go func() {
+		router.HandleFunc("/api/check", func(w http.ResponseWriter, r *http.Request) {
+			checkStatus(w, r)
+		}).Methods(http.MethodGet).Queries("query", "{query}")
+		log.Fatal(http.ListenAndServe(":80", router))
+	}()
+
+	for {
+		select {
+		case list := <-euListChannel:
+			euList = list
+			log.Println("EU list was updated")
+		case list := <-unListChannel:
+			unList = list
+			log.Println("UN List was updated")
+		}
+	}
 }
 
 func checkStatus(w http.ResponseWriter, r *http.Request) {
-	start_sanct := time.Now()
+	sanctionCheckStarted := time.Now()
 
 	vars := mux.Vars(r)
 	query := strings.Fields(vars["query"])
 
-	mu.Lock()
-	unResult := queries.QueryUNsanctionList(query, unList)
-	mu.Unlock()
+	log.Println("Sanctionlist search for", query, "Started")
+
+	unResult := queries.QueryUnSanctionList(query, unList)
 
 	if unResult == constants.FullHit {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Response{vars["query"], unResult.ToString()})
-		log.Println("EU Sanctioninst search for", query, "took", time.Since(start_sanct), "Result:", unResult.ToString())
+		json.NewEncoder(w).Encode(response{vars["query"], unResult.ToString()})
+		log.Println("UN Sanctioninst search for", query, "took", time.Since(sanctionCheckStarted), "Result:", unResult.ToString())
 	} else {
-		mu.Lock()
-		euResult := queries.QueryEUsanctionList(query, euList)
-		mu.Unlock()
-
+		euResult := queries.QueryEuSanctionList(query, euList)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Response{vars["query"], euResult.ToString()})
-		log.Println("UN Sanctionlist search for", query, "took", time.Since(start_sanct), "Result:", euResult.ToString())
+		json.NewEncoder(w).Encode(response{vars["query"], euResult.ToString()})
+		log.Println("EU Sanctionlist search for", query, "took", time.Since(sanctionCheckStarted), "Result:", euResult.ToString())
 	}
 }

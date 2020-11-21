@@ -7,8 +7,8 @@ import (
 	"github.com/HedvigInsurance/meerkat/utils"
 )
 
-type SanctionEntites struct {
-	Entites []SanctionEntity `xml:"sanctionEntity"`
+type SanctionEntities struct {
+	Entities []SanctionEntity `xml:"sanctionEntity"`
 }
 
 type SanctionEntity struct {
@@ -22,7 +22,7 @@ type NameAlias struct {
 	WholeName  string `xml:"wholeName,attr"`
 }
 
-func MapEuSanctionList() (euSanctionList SanctionEntites) {
+func MapEuSanctionList() (euSanctionList SanctionEntities) {
 	if xmlStr, err := utils.FetchXmlFromUrl("https://webgate.ec.europa.eu/europeaid/fsd/fsf/public/files/xmlFullSanctionsList/content?token=dG9rZW4tMjAxNw"); err != nil {
 		fmt.Printf("Failed to get XML: %v", err)
 	} else {
