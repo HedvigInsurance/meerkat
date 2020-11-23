@@ -7,14 +7,6 @@ ENV CGO_ENABLED=0
 ADD . /go/src/github.com/HedvigInsurance/meerkat
 WORKDIR /go/src/github.com/HedvigInsurance/meerkat
 
-# We want to populate the module cache based on the go.{mod,sum} files.
-#COPY go.mod .
-#COPY go.sum .
-
-#RUN go mod download
-
-#COPY . .
-
 # Fetching dependencies
 RUN go get -t ./...
 
@@ -25,7 +17,7 @@ RUN go test -v
 RUN go build -o build/main
 
 # Start fresh from a smaller image
-FROM alpine:3.9
+FROM alpine:3.12
 RUN apk add ca-certificates
 
 COPY --from=build_base /go/src/github.com/HedvigInsurance/meerkat/build /app
