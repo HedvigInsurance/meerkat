@@ -15,6 +15,9 @@ WORKDIR /go/src/github.com/HedvigInsurance/meerkat
 
 #COPY . .
 
+# Fetching dependencies
+RUN go get -t ./...
+
 # Unit tests
 RUN go test -v
 
