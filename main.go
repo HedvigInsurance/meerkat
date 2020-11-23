@@ -12,6 +12,8 @@ import (
 	"github.com/HedvigInsurance/meerkat/queries"
 
 	"github.com/gorilla/mux"
+	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 var euList mappers.SanctionEntities
@@ -31,9 +33,14 @@ func init() {
 }
 
 func main() {
+	//Starts Datadog tracer
+	tracer.Start()
+	defer tracer.Stop()
+	// Create a traced mux router.
+	mux := muxtrace.NewRouter(muxtrace.WithServiceName("meerkat"))
+
 	euListChannel := make(chan mappers.SanctionEntities)
 	unListChannel := make(chan mappers.IndividualRoot)
-	router := mux.NewRouter()
 
 	go func() {
 		for {
@@ -52,10 +59,10 @@ func main() {
 	}()
 
 	go func() {
-		router.HandleFunc("/api/check", func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/api/check", func(w http.ResponseWriter, r *http.Request) {
 			checkStatus(w, r)
 		}).Methods(http.MethodGet).Queries("query", "{query}")
-		log.Fatal(http.ListenAndServe(":80", router))
+		log.Fatal(http.ListenAndServe(":80", mux))
 	}()
 
 	for {
@@ -75,8 +82,6 @@ func checkStatus(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	query := strings.Fields(vars["query"])
-
-	log.Println("Sanctionlist search for ", query, " Started!")
 
 	unResult := queries.QueryUnSanctionList(query, unList)
 
