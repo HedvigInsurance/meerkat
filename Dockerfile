@@ -10,13 +10,13 @@ WORKDIR /go/src/github.com/HedvigInsurance/meerkat
 # Fetching dependencies
 RUN go get -t ./...
 
-# Unit tests
+# Running Unit tests
 RUN go test -v
 
-# Build the Go app
+# Building the Go app
 RUN go build -o build/main
 
-# Start fresh from a smaller image
+# Starting fresh from a smaller image
 FROM alpine:3.12
 RUN apk add ca-certificates
 
