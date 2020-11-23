@@ -28,7 +28,7 @@ RUN go build -o build/main
 FROM alpine:3.9
 RUN apk add ca-certificates
 
-COPY --from=buildc /go/src/github.com/HedvigInsurance/meerkat/build /app
+COPY --from=build_base /go/src/github.com/HedvigInsurance/meerkat/build /app
 
 WORKDIR /app
 
