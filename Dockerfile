@@ -8,12 +8,12 @@ ADD . /go/src/github.com/HedvigInsurance/meerkat
 WORKDIR /go/src/github.com/HedvigInsurance/meerkat
 
 # We want to populate the module cache based on the go.{mod,sum} files.
-COPY go.mod .
-COPY go.sum .
+#COPY go.mod .
+#COPY go.sum .
 
-RUN go mod download
+#RUN go mod download
 
-COPY . .
+#COPY . .
 
 # Unit tests
 RUN go test -v
