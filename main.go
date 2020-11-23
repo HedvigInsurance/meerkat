@@ -76,7 +76,7 @@ func checkStatus(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	query := strings.Fields(vars["query"])
 
-	log.Println("Sanctionlist search for", query, "Started")
+	log.Println("Sanctionlist search for ", query, " Started!")
 
 	unResult := queries.QueryUnSanctionList(query, unList)
 
