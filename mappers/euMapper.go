@@ -23,7 +23,7 @@ type NameAlias struct {
 }
 
 func MapEuSanctionList() (euSanctionList SanctionEntities) {
-	if xmlStr, err := utils.FetchXmlFromUrl("https://webgate.ec.europa.eu/europeaid/fsd/fsf/public/files/xmlFullSanctionsList/content?token=dG9rZW4tMjAxNw"); err != nil {
+	if xmlStr, err := utils.FetchXmlFromUrl("https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList/content?token=n002f3jd"); err != nil {
 		fmt.Printf("Failed to get XML: %v", err)
 	} else {
 		// fmt.Println("Received XML")
