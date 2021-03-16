@@ -25,7 +25,7 @@ type response struct {
 }
 
 func init() {
-    log.SetFormatter(&log.JSONFormatter{})
+	log.SetFormatter(&log.JSONFormatter{})
 	log.Info("Meerkat started!")
 	initialFetch := time.Now()
 	euList = mappers.MapEuSanctionList()
