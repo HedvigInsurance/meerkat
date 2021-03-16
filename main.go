@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 	"time"
@@ -25,11 +25,12 @@ type response struct {
 }
 
 func init() {
-	log.Println("Meerkat started!")
+	log.SetFormatter(&log.JSONFormatter{})
+	log.Info("Meerkat started!")
 	initialFetch := time.Now()
 	euList = mappers.MapEuSanctionList()
 	unList = mappers.MapUnSanctionList()
-	log.Println("Both listed were initiated! It took: ", time.Since(initialFetch))
+	log.Info("Both listed were initiated! It took: ", time.Since(initialFetch))
 }
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
 		for {
 			time.Sleep(time.Hour)
 			euListChannel <- mappers.MapEuSanctionList()
-			log.Println("EU list was fetched")
+			log.Info("EU list was fetched")
 		}
 	}()
 
@@ -54,7 +55,7 @@ func main() {
 		for {
 			time.Sleep(time.Hour)
 			unListChannel <- mappers.MapUnSanctionList()
-			log.Println("UN list was fetched")
+			log.Info("UN list was fetched")
 		}
 	}()
 
@@ -69,10 +70,10 @@ func main() {
 		select {
 		case list := <-euListChannel:
 			euList = list
-			log.Println("EU list was updated")
+			log.Info("EU list was updated")
 		case list := <-unListChannel:
 			unList = list
-			log.Println("UN List was updated")
+			log.Info("UN List was updated")
 		}
 	}
 }
@@ -88,11 +89,11 @@ func checkStatus(w http.ResponseWriter, r *http.Request) {
 	if unResult == constants.FullHit {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response{vars["query"], unResult.ToString()})
-		log.Println("UN Sanctioninst search for", query, "took", time.Since(sanctionCheckStarted), "Result:", unResult.ToString())
+		log.Info("UN Sanctioninst search completed, took", time.Since(sanctionCheckStarted), "Result:", unResult.ToString())
 	} else {
 		euResult := queries.QueryEuSanctionList(query, euList)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response{vars["query"], euResult.ToString()})
-		log.Println("EU Sanctionlist search for", query, "took", time.Since(sanctionCheckStarted), "Result:", euResult.ToString())
+		log.Info("EU Sanctionlist search completed, took", time.Since(sanctionCheckStarted), "Result:", euResult.ToString())
 	}
 }
